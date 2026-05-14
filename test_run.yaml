@@ -1,0 +1,217 @@
+# --------------------------------------- #
+# ---------- example run file ----------- #
+# --------------------------------------- #
+
+# debug: true
+theory:
+  classy:
+    path: /N/slate/siuclam/code/class_public_base
+    # stop_at_error: true
+    extra_args:
+      k_pivot: 0.05  
+      T_cmb: 2.7255
+      YHe: BBN
+      non_linear: none
+      recombination: HyRec
+      lensing: 'yes'
+      output: lCl, tCl, pCl, mPk
+      modes: s
+      ic: 'ad'
+      z_pk: '4 5 6 7 8 9 10 11 12.5'
+      P_k_max_1/Mpc: 35. 
+      k_per_decade_for_pk : 20
+    renames:
+      rdrag: rs_drag 
+      
+likelihood:
+  planck_2018_highl_plik.TTTEEE_lite_native: {}
+  planck_2018_lowl.TT: {}
+  planck_2018_lowl.EE_sroll2: {}
+  planck_2018_lensing.native: {}
+  bao.desi_2024_bao_all:
+    stop_at_error: false
+  sn.pantheon: {}   
+  uvlf: # instance name
+    class: UVLF_model2.UVLF 
+    python_path: .
+    input_params: 
+      - alphastar_icept
+      - betastar
+      - epsilonstar_slope
+      - epsilonstar_icept
+      - Mc_slope
+      - Mc_icept
+      - alphastar_slope
+      - sigma_MUV_hst
+      - sigma_MUV_jwst
+    output_params: 
+      - chi2_hst
+      - chi2_jwst
+    CV : 0.2
+    z_max: 12.5  # choose max z-range for data
+    window: 'tophat' # window function
+    ## set A, q, c for sharpk
+    # Anorm: 1.1
+    # qnorm: 1.22
+    # cnorm: 2.4
+
+
+params:
+  omega_b:
+    prior:
+      min: 0.019
+      max: 0.026
+    ref:
+      dist: norm
+      loc: 0.0236
+      scale: 0.0005
+  omega_cdm:
+    prior:
+      min: 0.08
+      max: 0.15
+    ref:
+      dist: norm
+      loc: 0.1185
+      scale: 0.0010
+    latex: \omega_\mathrm{cdm}
+  tau_reio:
+    prior:
+      min: 0.02
+      max: 0.10
+    ref:
+      dist: norm
+      loc: 0.06
+      scale: 0.005
+    proposal: 0.003
+  theta_s_100:
+    prior:
+      min: 1.035
+      max: 1.045
+    ref: 
+      dist: norm
+      loc: 1.042
+      scale: 0.0002
+    proposal: 0.001
+    latex: 100\theta_\mathrm{s}
+  A_planck:
+    prior:
+      dist: norm
+      loc: 1
+      scale: 0.0025
+    ref:
+      dist: norm
+      loc: 1
+      scale: 0.002
+    proposal: 0.001
+    latex: y_\mathrm{cal}
+    renames: calPlanck
+  logA:
+    prior:
+      min: 2.6
+      max: 3.4
+    ref:
+      dist: norm
+      loc: 3.05
+      scale: 0.005
+    proposal: 0.0036
+    latex: \log(10^{10} A_\mathrm{s})
+    drop: true
+  A_s:
+    value: 'lambda logA: 1e-10*np.exp(logA)'
+    latex: A_\mathrm{s}
+    derived: true
+  n_s:
+    prior:
+      min: 0.92
+      max: 1.05
+    ref:
+      dist: norm
+      loc: 0.966
+      scale: 0.001
+    proposal: 0.002
+
+  # --- survey scatters ---
+  sigma_MUV_hst:
+    prior: 
+      min: 0.001
+      max: 3.0
+    ref: 0.7
+    latex: \sigma_{M_{UV}}^{\rm hst}
+  sigma_MUV_jwst:
+    value: 'lambda sigma_MUV_hst: sigma_MUV_hst'
+    latex: \sigma_{M_{UV}}^{\rm jwst}
+
+  alphastar_icept:
+    prior: 
+      min: -1.5
+      max: 0  
+    ref: 
+      dist: norm
+      loc: -0.55
+      scale: 0.02
+    proposal: 0.1
+    latex: \alpha_\star
+  alphastar_slope:
+    value: 0.
+    latex: \alpha_\star^s
+  betastar:
+    prior: 
+      min: 0.01
+      max: 3.0
+    ref:       
+      dist: norm
+      loc: 2.0
+      scale: 0.5
+    proposal: 0.5
+    latex: \beta_\star
+  epsilonstar_slope:
+    value: 0.
+    latex: \epsilon_\star^s
+  epsilonstar_icept:
+    prior:
+      min: -3.0 
+      max: 0.5
+    ref:      
+      dist: norm
+      loc: -0.75
+      scale: 0.03
+    proposal: 0.03
+    latex: \epsilon_\star^i
+
+  Mc_slope:
+    value: 0.
+    latex: M_c^s
+
+  Mc_icept:
+    prior:
+      min: 10.
+      max: 13.
+    ref:    
+      dist: norm
+      loc: 11.9
+      scale: 0.2
+    proposal: 0.5 
+    latex: M_c^i
+         
+  Omega_m: 
+    latex: \Omega_m
+    derived: true
+  sigma8:
+    latex: \sigma_8    
+  h:
+    latex: h    
+    
+sampler:
+  mcmc:
+    Rminus1_stop: 1.0e-02
+    # temperature: 2
+    drag: true
+    proposal_scale: 1.
+    learn_proposal: true
+    learn_proposal_Rminus1_max: 40.0
+    learn_proposal_Rminus1_max_early: 100.0
+    burn_in: 0.
+    max_tries: 500
+    output_every: 10
+ 
+output: ./output/run01/run01
