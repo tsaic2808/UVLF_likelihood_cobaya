@@ -5,7 +5,7 @@
 # debug: true
 theory:
   classy:
-    path: /N/slate/siuclam/code/class_public_base
+    path: /Path/to/Class
     # stop_at_error: true
     extra_args:
       k_pivot: 0.05  
